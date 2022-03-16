@@ -9,6 +9,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QPushButton>
+#include "cmdgenerator.h"
 
 class MainWindow : public QMainWindow
 {
@@ -22,10 +23,11 @@ private slots:
     void updateCommand();
 
 private:
+    QLineEdit* m_fileEdit;
     QCheckBox* m_videoEnabled;
     QLabel* m_videoInfo;
     QComboBox* m_videoCodec;
-    QComboBox* m_videoQuality;
+    QComboBox* m_proresQuality;
     QComboBox* m_videoWidth;
     QComboBox* m_videoHeight;
     QCheckBox* m_keepAspectRatio;
@@ -50,4 +52,6 @@ private:
 
     std::string m_ffmpegPath;
     std::string m_ffprobePath;
+
+    CmdGenerator* m_cmdGenerator;
 };

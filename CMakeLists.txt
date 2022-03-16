@@ -15,14 +15,14 @@ if (APPLE)
     set (CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 endif()
 
+file (GLOB SOURCES
+        src/*.cpp
+        src/*.h)
+
 if (APPLE)
-    add_executable(part3 MACOSX_BUNDLE
-            main.cpp
-            mainwindow.cpp mainwindow.h)
+    add_executable(part3 MACOSX_BUNDLE ${SOURCES})
 else()
-    add_executable(part3
-            main.cpp
-            mainwindow.cpp mainwindow.h)
+    add_executable(part3 ${SOURCES})
 endif()
 
 target_link_libraries(part3 PRIVATE Qt6::Widgets)

@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 
+using namespace std;
+
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 {
     setWindowTitle("Part3");
@@ -21,8 +23,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 
     mainLayout->addLayout(fileListLayout);
 
-    auto fileEdit = new QLineEdit;
-    mainLayout->addWidget(fileEdit);
+    m_fileEdit = new QLineEdit;
+    mainLayout->addWidget(m_fileEdit);
 
 
     // Video
@@ -33,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_videoEnabled->setChecked(true);
     videoLayout->addWidget(m_videoEnabled);
 
-    m_videoInfo = new QLabel("Video Info: ");
+    m_videoInfo = new QLabel("信息：");
     videoLayout->addWidget(m_videoInfo);
 
     videoLayout->setAlignment(Qt::AlignLeft);
@@ -50,10 +52,10 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     videoConfigs->addWidget(m_videoCodec, 0, 1);
 
     videoConfigs->addWidget(new QLabel("Prores 质量："), 0, 2);
-    m_videoQuality = new QComboBox;
+    m_proresQuality = new QComboBox;
     QStringList videoQualities = {"0: Proxy", "1: LT", "2: Normal", "3: HQ"};
-    m_videoQuality->addItems(videoQualities);
-    videoConfigs->addWidget(m_videoQuality, 0, 3);
+    m_proresQuality->addItems(videoQualities);
+    videoConfigs->addWidget(m_proresQuality, 0, 3);
 
     videoConfigs->addWidget(new QLabel("宽度："), 1, 0);
 
@@ -113,7 +115,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_audioEnabled->setChecked(true);
     audioLayout->addWidget(m_audioEnabled);
 
-    m_audioInfo = new QLabel("Audio Info: ");
+    m_audioInfo = new QLabel("信息：");
     audioLayout->addWidget(m_audioInfo);
 
     mainLayout->addLayout(audioLayout);
@@ -174,10 +176,33 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     setCentralWidget(widget);
 
     connect(m_containerFormat, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
+
+    m_cmdGenerator = new CmdGenerator;
 }
 
 
 void MainWindow::updateCommand()
 {
-    printf("updateCommand()");
+    m_cmdGenerator->sourcePath = m_fileEdit->text();
+    m_cmdGenerator->videoEnabled = m_videoEnabled->isChecked();
+    m_cmdGenerator->videoCodec = m_videoCodec->currentText();
+    m_cmdGenerator->proresQuality = m_proresQuality->currentText();
+    // string value "auto" will automatically become 0
+    m_cmdGenerator->videoWidth = m_videoWidth->currentText().toInt();
+    m_cmdGenerator->videoHeight = m_videoHeight->currentText().toInt();
+    m_cmdGenerator->keepAspectRatio = m_keepAspectRatio->isChecked();
+    m_cmdGenerator->videoQuality = m_videoCRF->text().toInt();
+    m_cmdGenerator->videoEncodingSpeed = m_encodingSpeed->currentText();
+    m_cmdGenerator->maxVideoBitRate = m_maxVideoBitRate->text();
+    m_cmdGenerator->videoExtraParameter = m_videoExtraParameters->text();
+
+    m_cmdGenerator->audioEnabled = m_audioEnabled->isChecked();
+    m_cmdGenerator->audioCodec = m_audioCodec->currentText();
+    m_cmdGenerator->audioBitRate = m_audioBitRate->text();
+    m_cmdGenerator->audioExtraParameter = m_audioExtraParameters->text();
+
+    m_cmdGenerator->containerFormat = m_containerFormat->currentText();
+    m_cmdGenerator->overwriteExisting = m_overwriteExisting->isChecked();
+
+    m_commandLine->setText(m_cmdGenerator->GetCommand());
 }
