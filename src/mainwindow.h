@@ -34,6 +34,7 @@ private:
     QSpinBox* m_videoCRF;
     QComboBox* m_encodingSpeed;
     QLineEdit* m_maxVideoBitRate;
+    QCheckBox* m_firstFramePlay;
     QLineEdit* m_videoExtraParameters;
 
     QCheckBox* m_audioEnabled;

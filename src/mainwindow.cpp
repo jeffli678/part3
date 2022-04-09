@@ -13,11 +13,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 
     auto fileListLayout = new QHBoxLayout;
 
-    auto fileListLabel = new QLabel("文件/文件夹：");
+    auto fileListLabel = new QLabel("文件：");
     fileListLayout->addWidget(fileListLabel);
-
-    auto fileCountLabel = new QLabel("n个");
-    fileListLayout->addWidget(fileCountLabel);
 
     fileListLayout->setAlignment(Qt::AlignLeft);
 
@@ -74,6 +71,10 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_keepAspectRatio = new QCheckBox("保持宽高比");
     m_keepAspectRatio->setChecked(true);
     videoConfigs->addWidget(m_keepAspectRatio, 1, 4);
+
+    m_firstFramePlay = new QCheckBox("首帧播放");
+    m_firstFramePlay->setChecked(false);
+    videoConfigs->addWidget(m_firstFramePlay, 1, 5);
 
     videoConfigs->addWidget(new QLabel("质量："), 2, 0);
 
@@ -175,7 +176,26 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     widget->setLayout(mainLayout);
     setCentralWidget(widget);
 
+    connect(m_videoEnabled, &QCheckBox::stateChanged, [&](){ updateCommand(); });
+    connect(m_videoCodec, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
+    connect(m_proresQuality, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
+    connect(m_videoWidth, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
+    connect(m_videoWidth, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
+    connect(m_videoWidth, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
+    connect(m_keepAspectRatio, &QCheckBox::stateChanged, [&](){ updateCommand(); });
+    connect(m_firstFramePlay, &QCheckBox::stateChanged, [&](){ updateCommand(); });
+    connect(m_videoCRF, &QSpinBox::valueChanged, [&](){ updateCommand(); });
+    connect(m_encodingSpeed, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
+    connect(m_maxVideoBitRate, &QLineEdit::textChanged, [&](){ updateCommand(); });
+    connect(m_videoExtraParameters, &QLineEdit::textChanged, [&](){ updateCommand(); });
+
+    connect(m_audioEnabled, &QCheckBox::stateChanged, [&](){ updateCommand(); });
+    connect(m_audioCodec, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
+    connect(m_audioBitRate, &QLineEdit::textChanged, [&](){ updateCommand(); });
+    connect(m_audioExtraParameters, &QLineEdit::textChanged, [&](){ updateCommand(); });
+
     connect(m_containerFormat, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
+    connect(m_overwriteExisting, &QCheckBox::stateChanged, [&](){ updateCommand(); });
 
     m_cmdGenerator = new CmdGenerator;
 }
@@ -191,6 +211,7 @@ void MainWindow::updateCommand()
     m_cmdGenerator->videoWidth = m_videoWidth->currentText().toInt();
     m_cmdGenerator->videoHeight = m_videoHeight->currentText().toInt();
     m_cmdGenerator->keepAspectRatio = m_keepAspectRatio->isChecked();
+    m_cmdGenerator->firstFramePlay = m_firstFramePlay->isChecked();
     m_cmdGenerator->videoQuality = m_videoCRF->text().toInt();
     m_cmdGenerator->videoEncodingSpeed = m_encodingSpeed->currentText();
     m_cmdGenerator->maxVideoBitRate = m_maxVideoBitRate->text();

@@ -14,6 +14,7 @@ public:
     QString proresQuality;
     uint32_t videoWidth{}, videoHeight{};
     bool keepAspectRatio{};
+    bool firstFramePlay{};
     uint32_t videoQuality{};
     QString videoEncodingSpeed;
     QString maxVideoBitRate;
@@ -33,6 +34,8 @@ public:
     void AddCommandLinePart(const QString& part);
 
     CmdGenerator();
+
+    QString GetNextUsablePath();
 
 private:
     void PrepareCommand();
