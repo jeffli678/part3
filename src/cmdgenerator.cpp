@@ -48,7 +48,7 @@ void CmdGenerator::PrepareCommand()
                 }
             }
 
-            AddCommandLinePart("-pix");
+            AddCommandLinePart("-pix_fmt");
             AddCommandLinePart("yuv420p");
         }
         else if (videoCodec == "prores")
