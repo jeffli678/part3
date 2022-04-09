@@ -10,6 +10,8 @@
 #include <QSpinBox>
 #include <QPushButton>
 #include <QDragEnterEvent>
+#include <QProcess>
+#include <QProgressBar>
 #include "cmdgenerator.h"
 
 class MainWindow : public QMainWindow
@@ -22,6 +24,7 @@ public:
 
 private slots:
     void updateCommand();
+    void runCommand();
 
 private:
     QLineEdit* m_fileEdit;
@@ -48,15 +51,19 @@ private:
     QCheckBox* m_overwriteExisting;
 
     QLabel* m_timeRemaining;
+    QProgressBar* m_progressBar;
 
     QTextEdit* m_commandLine;
     QPushButton* m_goButton;
 
-    std::string m_ffmpegPath;
     std::string m_ffprobePath;
 
     CmdGenerator* m_cmdGenerator;
 
+    QProcess* m_process;
+
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
+
+    void resetProgressUI();
 };

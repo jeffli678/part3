@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include <QMimeData>
 #include <QFileInfo>
+#include <QMessageBox>
+#include <QTime>
 
 using namespace std;
 
@@ -166,8 +168,15 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     commandLineLayout->setAlignment(Qt::AlignLeft);
     commandLineLayout->addWidget(new QLabel("命令行："));
 
-    m_timeRemaining = new QLabel;
+    m_progressBar = new QProgressBar;
+    m_progressBar->setMinimum(0);
+    m_progressBar->setMaximum(10);
+    commandLineLayout->addWidget(m_progressBar);
+    m_progressBar->setVisible(false);
+
+    m_timeRemaining = new QLabel("剩余时间:");
     commandLineLayout->addWidget(m_timeRemaining);
+    m_timeRemaining->setVisible(false);
 
     mainLayout->addLayout(commandLineLayout);
 
@@ -202,6 +211,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 
     connect(m_containerFormat, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
     connect(m_overwriteExisting, &QCheckBox::stateChanged, [&](){ updateCommand(); });
+
+    connect(m_goButton, &QPushButton::clicked, this, &MainWindow::runCommand);
 
     m_cmdGenerator = new CmdGenerator;
     updateCommand();
@@ -260,4 +271,53 @@ void MainWindow::dropEvent(QDropEvent *event)
 
     m_fileEdit->setText(path);
     event->acceptProposedAction();
+}
+
+
+void MainWindow::runCommand()
+{
+    if (m_goButton->text() == "Go!")
+    {
+        m_goButton->setText("Stop!");
+        m_progressBar->setVisible(true);
+        m_timeRemaining->setVisible(true);
+        m_process = new QProcess(this);
+        QTime startTime = QTime::currentTime();
+        connect(m_process, &QProcess::finished, [&, startTime](int exitCode, QProcess::ExitStatus exitStatus){
+            if ((exitCode == 0) && (exitStatus == QProcess::NormalExit))
+            {
+                QTime endTime = QTime::currentTime();
+                int seconds = endTime.secsTo(startTime);
+                QMessageBox(QMessageBox::Information, "Part3", QString("转换成功！用时%1s").arg(seconds),
+                            QMessageBox::Ok).exec();
+            }
+            else
+            {
+                QMessageBox(QMessageBox::Critical, "转换失败", QString("错误代码: %1").arg(exitCode),
+                            QMessageBox::Ok).exec();
+            }
+
+            resetProgressUI();
+        });
+        m_process->startCommand(m_commandLine->toPlainText());
+    }
+    else
+    {
+        m_process->kill();
+        delete m_process;
+        m_process = nullptr;
+
+        resetProgressUI();
+    }
+}
+
+
+void MainWindow::resetProgressUI()
+{
+    m_goButton->setText("Go!");
+    m_progressBar->setVisible(false);
+    m_progressBar->setValue(0);
+    m_timeRemaining->setVisible(false);
+    m_timeRemaining->setText("剩余时间:");
+    updateCommand();
 }

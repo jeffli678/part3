@@ -18,7 +18,7 @@ void CmdGenerator::PrepareCommand()
     AddCommandLinePart(QString('"') + ffmpegPath + '"');
     AddCommandLinePart("-hide_banner");
     AddCommandLinePart("-i");
-    AddCommandLinePart("%1");
+    AddCommandLinePart("\"%1\"");
     if (overwriteExisting)
         AddCommandLinePart("-y");
 
@@ -111,7 +111,7 @@ void CmdGenerator::PrepareCommand()
         AddCommandLinePart("-an");
     }
 
-    AddCommandLinePart("%2");
+    AddCommandLinePart("\"%2\"");
 }
 
 
