@@ -287,7 +287,7 @@ void MainWindow::runCommand()
             if ((exitCode == 0) && (exitStatus == QProcess::NormalExit))
             {
                 QTime endTime = QTime::currentTime();
-                int seconds = endTime.secsTo(startTime);
+                int seconds = startTime.secsTo(endTime);
                 QMessageBox(QMessageBox::Information, "Part3", QString("转换成功！用时%1s").arg(seconds),
                             QMessageBox::Ok).exec();
             }
