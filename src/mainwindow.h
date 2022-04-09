@@ -9,6 +9,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QPushButton>
+#include <QDragEnterEvent>
 #include "cmdgenerator.h"
 
 class MainWindow : public QMainWindow
@@ -55,4 +56,7 @@ private:
     std::string m_ffprobePath;
 
     CmdGenerator* m_cmdGenerator;
+
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
 };

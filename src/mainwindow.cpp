@@ -1,4 +1,6 @@
 #include "mainwindow.h"
+#include <QMimeData>
+#include <QFileInfo>
 
 using namespace std;
 
@@ -6,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 {
     setWindowTitle("Part3");
     resize(600, 700);
+    setAcceptDrops(true);
+
     auto widget = new QWidget(this);
 
     auto mainLayout = new QVBoxLayout(this);
@@ -176,6 +180,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     widget->setLayout(mainLayout);
     setCentralWidget(widget);
 
+    connect(m_fileEdit, &QLineEdit::textChanged, [&](){ updateCommand(); });
+
     connect(m_videoEnabled, &QCheckBox::stateChanged, [&](){ updateCommand(); });
     connect(m_videoCodec, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
     connect(m_proresQuality, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
@@ -198,6 +204,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     connect(m_overwriteExisting, &QCheckBox::stateChanged, [&](){ updateCommand(); });
 
     m_cmdGenerator = new CmdGenerator;
+    updateCommand();
 }
 
 
@@ -226,4 +233,31 @@ void MainWindow::updateCommand()
     m_cmdGenerator->overwriteExisting = m_overwriteExisting->isChecked();
 
     m_commandLine->setText(m_cmdGenerator->GetCommand());
+}
+
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls())
+        event->acceptProposedAction();
+}
+
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    auto mimeData = event->mimeData();
+    if ((!mimeData) || (!mimeData->hasUrls()))
+        return;
+
+    auto urls = event->mimeData()->urls();
+    if (urls.empty())
+        return;
+
+    auto url = urls[0];
+    auto path = url.toLocalFile();
+    if (!QFileInfo::exists(path))
+        return;
+
+    m_fileEdit->setText(path);
+    event->acceptProposedAction();
 }
