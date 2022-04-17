@@ -13,6 +13,7 @@
 #include <QProcess>
 #include <QProgressBar>
 #include "cmdgenerator.h"
+#include "cmdexecutor.h"
 
 class MainWindow : public QMainWindow
 {
@@ -25,7 +26,9 @@ public:
 private slots:
     void updateCommand();
     void runCommand();
-    void updateProgress();
+    void onFailed(int exitCode);
+    void onSucceeded(const QTime& time);
+    void onProgress(double percentage, const QTime& time);
 
 private:
     QLineEdit* m_fileEdit;
@@ -61,7 +64,7 @@ private:
 
     CmdGenerator* m_cmdGenerator;
 
-    QProcess* m_process;
+    CommandLineExecutor* m_executor;
 
     double m_totalSeconds{};
 

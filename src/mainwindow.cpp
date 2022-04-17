@@ -3,7 +3,6 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QTime>
-#include <QRegularExpression>
 
 using namespace std;
 
@@ -282,33 +281,17 @@ void MainWindow::runCommand()
         m_goButton->setText("Stop!");
         m_progressBar->setVisible(true);
         m_timeRemaining->setVisible(true);
-        m_process = new QProcess(this);
-        QTime startTime = QTime::currentTime();
-        connect(m_process, &QProcess::finished, [&, startTime](int exitCode, QProcess::ExitStatus exitStatus){
-            if ((exitCode == 0) && (exitStatus == QProcess::NormalExit))
-            {
-                QTime endTime = QTime::currentTime();
-                int seconds = startTime.secsTo(endTime);
-                QMessageBox(QMessageBox::Information, "Part3", QString("转换成功！用时%1s").arg(seconds),
-                            QMessageBox::Ok).exec();
-            }
-            else
-            {
-                QMessageBox(QMessageBox::Critical, "转换失败", QString("错误代码: %1").arg(exitCode),
-                            QMessageBox::Ok).exec();
-            }
-
-            resetProgressUI();
-        });
-        connect(m_process, &QProcess::readyReadStandardOutput, this, &MainWindow::updateProgress);
-        connect(m_process, &QProcess::readyReadStandardError, this, &MainWindow::updateProgress);
-        m_process->startCommand(m_commandLine->toPlainText());
+        m_executor = new CommandLineExecutor(m_commandLine->toPlainText());
+        connect(m_executor, &CommandLineExecutor::Failed, this, &MainWindow::onFailed);
+        connect(m_executor, &CommandLineExecutor::Succeeded, this, &MainWindow::onSucceeded);
+        connect(m_executor, &CommandLineExecutor::Progress, this, &MainWindow::onProgress);
+        m_executor->Start();
     }
     else
     {
-        m_process->kill();
-        delete m_process;
-        m_process = nullptr;
+        m_executor->Kill();
+        delete m_executor;
+        m_executor = nullptr;
 
         resetProgressUI();
     }
@@ -326,69 +309,25 @@ void MainWindow::resetProgressUI()
 }
 
 
-void MainWindow::updateProgress()
+void MainWindow::onFailed(int exitCode)
 {
-//    auto data = QString(m_process->readAllStandardOutput());
-//    printf("%s\n", data.toStdString().c_str());
-    auto data = QString(m_process->readAllStandardError());
-    for (auto line: data.split('\n'))
-    {
-        processOneLine(line);
-    }
+    QMessageBox(QMessageBox::Critical, "转换失败", QString("错误代码: %1").arg(exitCode),
+                            QMessageBox::Ok).exec();
+    resetProgressUI();
 }
 
 
-void MainWindow::processOneLine(const QString &line)
+void MainWindow::onSucceeded(const QTime &time)
 {
-//    printf("%s\n", line.toStdString().c_str());
-//    printf("============\n");
+    QMessageBox(QMessageBox::Information, "Part3", QString("转换成功！用时%1s").arg(time.toString("hh:mm:ss")),
+                        QMessageBox::Ok).exec();
+    resetProgressUI();
+}
 
-    QString data = line.trimmed();
-    if (data.startsWith("Duration: "))
-    {
-        auto match = QRegularExpression(R"(.*Duration: (\d+):(\d+):(\d+)\.(\d+))").match(data);
-        if (match.hasMatch())
-        {
-            int hour = match.captured(1).toInt();
-            int minute = match.captured(2).toInt();
-            int second = match.captured(3).toInt();
-            int mseconds = match.captured(3).toInt();
-            m_totalSeconds = 3600 * hour + 60 * minute + second + (double)mseconds / 100;
-        }
-    }
-    else if (data.startsWith("frame"))
-    {
-        auto match = QRegularExpression(R"(.*time=(\d+):(\d+):(\d+)\.(\d+))").match(data);
-        double secondsElapsed = 0.0;
-        bool timeValid = false;
-        double speed = 0.0;
-        bool speedValid = false;
 
-        if (match.hasMatch())
-        {
-            int hour = match.captured(1).toInt();
-            int minute = match.captured(2).toInt();
-            int second = match.captured(3).toInt();
-            int mseconds = match.captured(3).toInt();
-            secondsElapsed = 3600 * hour + 60 * minute + second + (double)mseconds / 100;
-            timeValid = true;
-        }
-
-        match = QRegularExpression(R"(.*speed=(.*)x)").match(data);
-        if (match.hasMatch())
-        {
-            speed = match.captured(1).toDouble();
-            speedValid = true;
-        }
-
-        if (timeValid && speedValid && (speed != 0))
-        {
-            auto rate = secondsElapsed / m_totalSeconds * 100;
-            int secondsRemain = (m_totalSeconds - secondsElapsed) / speed;
-            QTime time = QTime(0, 0, 0).addSecs(secondsRemain);
-            m_progressBar->setValue(int(rate));
-            QString text = QString("%1\% 剩余时间： %2").arg(rate, 0, 'g', 1).arg(time.toString("hh:mm:ss"));
-            m_timeRemaining->setText(text);
-        }
-    }
+void MainWindow::onProgress(double percentage, const QTime &time)
+{
+    m_progressBar->setValue(percentage);
+    QString text = QString("%1\% 剩余时间： %2").arg(percentage, 0, 'g', 1).arg(time.toString("hh:mm:ss"));
+    m_timeRemaining->setText(text);
 }
