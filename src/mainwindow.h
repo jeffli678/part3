@@ -25,6 +25,7 @@ public:
 private slots:
     void updateCommand();
     void runCommand();
+    void updateProgress();
 
 private:
     QLineEdit* m_fileEdit;
@@ -62,8 +63,12 @@ private:
 
     QProcess* m_process;
 
+    double m_totalSeconds{};
+
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
 
     void resetProgressUI();
+
+    void processOneLine(const QString& line);
 };

@@ -3,6 +3,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QTime>
+#include <QRegularExpression>
 
 using namespace std;
 
@@ -170,7 +171,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 
     m_progressBar = new QProgressBar;
     m_progressBar->setMinimum(0);
-    m_progressBar->setMaximum(10);
+    m_progressBar->setMaximum(100);
     commandLineLayout->addWidget(m_progressBar);
     m_progressBar->setVisible(false);
 
@@ -299,6 +300,8 @@ void MainWindow::runCommand()
 
             resetProgressUI();
         });
+        connect(m_process, &QProcess::readyReadStandardOutput, this, &MainWindow::updateProgress);
+        connect(m_process, &QProcess::readyReadStandardError, this, &MainWindow::updateProgress);
         m_process->startCommand(m_commandLine->toPlainText());
     }
     else
@@ -320,4 +323,72 @@ void MainWindow::resetProgressUI()
     m_timeRemaining->setVisible(false);
     m_timeRemaining->setText("剩余时间:");
     updateCommand();
+}
+
+
+void MainWindow::updateProgress()
+{
+//    auto data = QString(m_process->readAllStandardOutput());
+//    printf("%s\n", data.toStdString().c_str());
+    auto data = QString(m_process->readAllStandardError());
+    for (auto line: data.split('\n'))
+    {
+        processOneLine(line);
+    }
+}
+
+
+void MainWindow::processOneLine(const QString &line)
+{
+//    printf("%s\n", line.toStdString().c_str());
+//    printf("============\n");
+
+    QString data = line.trimmed();
+    if (data.startsWith("Duration: "))
+    {
+        auto match = QRegularExpression(R"(.*Duration: (\d+):(\d+):(\d+)\.(\d+))").match(data);
+        if (match.hasMatch())
+        {
+            int hour = match.captured(1).toInt();
+            int minute = match.captured(2).toInt();
+            int second = match.captured(3).toInt();
+            int mseconds = match.captured(3).toInt();
+            m_totalSeconds = 3600 * hour + 60 * minute + second + (double)mseconds / 100;
+        }
+    }
+    else if (data.startsWith("frame"))
+    {
+        auto match = QRegularExpression(R"(.*time=(\d+):(\d+):(\d+)\.(\d+))").match(data);
+        double secondsElapsed = 0.0;
+        bool timeValid = false;
+        double speed = 0.0;
+        bool speedValid = false;
+
+        if (match.hasMatch())
+        {
+            int hour = match.captured(1).toInt();
+            int minute = match.captured(2).toInt();
+            int second = match.captured(3).toInt();
+            int mseconds = match.captured(3).toInt();
+            secondsElapsed = 3600 * hour + 60 * minute + second + (double)mseconds / 100;
+            timeValid = true;
+        }
+
+        match = QRegularExpression(R"(.*speed=(.*)x)").match(data);
+        if (match.hasMatch())
+        {
+            speed = match.captured(1).toDouble();
+            speedValid = true;
+        }
+
+        if (timeValid && speedValid && (speed != 0))
+        {
+            auto rate = secondsElapsed / m_totalSeconds * 100;
+            int secondsRemain = (m_totalSeconds - secondsElapsed) / speed;
+            QTime time = QTime(0, 0, 0).addSecs(secondsRemain);
+            m_progressBar->setValue(int(rate));
+            QString text = QString("%1\% 剩余时间： %2").arg(rate, 0, 'g', 1).arg(time.toString("hh:mm:ss"));
+            m_timeRemaining->setText(text);
+        }
+    }
 }
