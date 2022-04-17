@@ -3,6 +3,8 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QTime>
+#include <QFileDialog>
+#include <QStandardPaths>
 
 using namespace std;
 
@@ -17,18 +19,18 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     auto mainLayout = new QVBoxLayout(this);
     mainLayout->setAlignment(Qt::AlignTop);
 
-    auto fileListLayout = new QHBoxLayout;
-
     auto fileListLabel = new QLabel("文件：");
-    fileListLayout->addWidget(fileListLabel);
+    mainLayout->addWidget(fileListLabel);
 
-    fileListLayout->setAlignment(Qt::AlignLeft);
-
-    mainLayout->addLayout(fileListLayout);
+    auto fileLayout = new QHBoxLayout;
+    fileLayout->setAlignment(Qt::AlignLeft);
 
     m_fileEdit = new QLineEdit;
-    mainLayout->addWidget(m_fileEdit);
+    m_fileSelect = new QPushButton("选择文件...");
+    fileLayout->addWidget(m_fileEdit);
+    fileLayout->addWidget(m_fileSelect);
 
+    mainLayout->addLayout(fileLayout);
 
     // Video
     auto videoLayout = new QHBoxLayout;
@@ -190,6 +192,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     setCentralWidget(widget);
 
     connect(m_fileEdit, &QLineEdit::textChanged, [&](){ updateCommand(); });
+    connect(m_fileSelect, &QPushButton::clicked, this, &MainWindow::selectFile);
 
     connect(m_videoEnabled, &QCheckBox::stateChanged, [&](){ updateCommand(); });
     connect(m_videoCodec, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
@@ -330,4 +333,12 @@ void MainWindow::onProgress(double percentage, const QTime &time)
     m_progressBar->setValue(percentage);
     QString text = QString("%1\% 剩余时间： %2").arg(percentage, 0, 'g', 1).arg(time.toString("hh:mm:ss"));
     m_timeRemaining->setText(text);
+}
+
+
+void MainWindow::selectFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "选择文件",
+                                                    QDir::homePath());
+    m_fileEdit->setText(fileName);
 }

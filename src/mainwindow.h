@@ -24,6 +24,7 @@ public:
     ~MainWindow() override = default;
 
 private slots:
+    void selectFile();
     void updateCommand();
     void runCommand();
     void onFailed(int exitCode);
@@ -32,6 +33,7 @@ private slots:
 
 private:
     QLineEdit* m_fileEdit;
+    QPushButton* m_fileSelect;
     QCheckBox* m_videoEnabled;
     QLabel* m_videoInfo;
     QComboBox* m_videoCodec;
