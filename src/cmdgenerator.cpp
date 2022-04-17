@@ -143,12 +143,12 @@ QString CmdGenerator::GetNextUsablePath()
 
     QFileInfo path(fullPath);
     QDir dir = path.dir();
-    QString basename = path.baseName();
+    QString basename = path.completeBaseName();
     QString suffix = path.suffix();
     QString newPath = dir.absoluteFilePath(basename);
 
     constexpr size_t MAX_TRY = 1000;
-    for (size_t i = 0; i < MAX_TRY; i++)
+    for (size_t i = 1; i < MAX_TRY; i++)
     {
         QString candidatePath = QString("%1-converted-%2.%3").arg(newPath).arg(i).arg(containerFormat);
         if (!QFileInfo::exists(candidatePath))
