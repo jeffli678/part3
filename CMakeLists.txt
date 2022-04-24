@@ -28,10 +28,23 @@ endif()
 target_link_libraries(part3 PRIVATE Qt6::Widgets)
 
 if (APPLE)
+    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/ffmpeg/Darwin/ffmpeg)
+        file(DOWNLOAD https://github.com/jeffli678/ffmpeg-build-script/releases/download/v1.35/ffmpeg ${CMAKE_SOURCE_DIR}/ffmpeg/Darwin/ffmpeg
+#            EXPECTED_HASH sha1sum=880d7dcf59a4d7b2113c8e52f729c06a4aedb91a
+            )
+    endif()
+
+    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/ffmpeg/Darwin/ffprobe)
+        file(DOWNLOAD https://github.com/jeffli678/ffmpeg-build-script/releases/download/v1.35/ffprobe ${CMAKE_SOURCE_DIR}/ffmpeg/Darwin/ffprobe
+#            EXPECTED_HASH sha1sum=880d7dcf59a4d7b2113c8e52f729c06a4aedb91a
+            )
+    endif()
+
     add_custom_command(TARGET part3 POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${PROJECT_SOURCE_DIR}/ffmpeg/${CMAKE_SYSTEM_NAME}
-            ${PROJECT_BINARY_DIR}/part3.app/Contents/MacOS/ffmpeg)
+                ${PROJECT_SOURCE_DIR}/ffmpeg/${CMAKE_SYSTEM_NAME}
+                ${PROJECT_BINARY_DIR}/part3.app/Contents/MacOS/ffmpeg
+            COMMAND chmod +x ${PROJECT_BINARY_DIR}/part3.app/Contents/MacOS/ffmpeg/*)
 else()
     add_custom_command(TARGET part3 POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
