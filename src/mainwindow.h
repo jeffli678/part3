@@ -40,7 +40,6 @@ private:
     QComboBox* m_proresQuality;
     QComboBox* m_videoWidth;
     QComboBox* m_videoHeight;
-    QCheckBox* m_keepAspectRatio;
     QSpinBox* m_videoCRF;
     QComboBox* m_encodingSpeed;
     QLineEdit* m_maxVideoBitRate;
