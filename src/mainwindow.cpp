@@ -54,6 +54,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_videoCodec = new QComboBox;
     QStringList videoCodecs = {"copy", "h264", "libx265", "prores", "prores_ks", "自动"};
     m_videoCodec->addItems(videoCodecs);
+    m_videoCodec->setEditable(true);
     videoConfigs->addWidget(m_videoCodec, 0, 1);
 
     videoConfigs->addWidget(new QLabel("Prores 质量："), 0, 2);
@@ -67,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_videoWidth = new QComboBox;
     QStringList videoWidths = {"自动", "2048", "1920", "1280", "720", "480", "320"};
     m_videoWidth->addItems(videoWidths);
+    m_videoWidth->setEditable(true);
     videoConfigs->addWidget(m_videoWidth, 1, 1);
 
     videoConfigs->addWidget(new QLabel("高度："), 1, 2);
@@ -74,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_videoHeight = new QComboBox;
     QStringList videoHeights = {"自动", "1080", "858", "720", "450", "360", "270"};
     m_videoHeight->addItems(videoHeights);
+    m_videoHeight->setEditable(true);
     videoConfigs->addWidget(m_videoHeight, 1, 3);
 
     m_firstFramePlay = new QCheckBox("首帧播放");
@@ -94,6 +97,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_encodingSpeed = new QComboBox;
     m_encodingSpeed->addItems({"veryfast", "faster", "fast", "medium"});
     m_encodingSpeed->setCurrentText("faster");
+    m_encodingSpeed->setEditable(true);
     videoConfigs->addWidget(m_encodingSpeed, 2, 3);
 
     videoConfigs->addWidget(new QLabel("最大码率："), 2, 4);
@@ -132,6 +136,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_audioCodec = new QComboBox;
     auto audioCodecs = QStringList({"copy", "aac", "pcm_s16le", "flac", "自动"});
     m_audioCodec->addItems(audioCodecs);
+    m_audioCodec->setEditable(true);
     audioConfigs->addWidget(m_audioCodec);
 
     audioConfigs->addWidget(new QLabel("码率："));
@@ -155,6 +160,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_containerFormat = new QComboBox;
     auto containerFormats = QStringList({"MP4",  "MOV", "AAC", "WAV", "FLAC", "MP3"});
     m_containerFormat->addItems(containerFormats);
+    m_containerFormat->setEditable(true);
     containerLayout->addWidget(m_containerFormat);
 
     m_overwriteExisting = new QCheckBox("覆盖重名文件");
