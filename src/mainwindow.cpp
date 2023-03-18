@@ -76,13 +76,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_videoHeight->addItems(videoHeights);
     videoConfigs->addWidget(m_videoHeight, 1, 3);
 
-    m_keepAspectRatio = new QCheckBox("保持宽高比");
-    m_keepAspectRatio->setChecked(true);
-    videoConfigs->addWidget(m_keepAspectRatio, 1, 4);
-
     m_firstFramePlay = new QCheckBox("首帧播放");
     m_firstFramePlay->setChecked(false);
-    videoConfigs->addWidget(m_firstFramePlay, 1, 5);
+    videoConfigs->addWidget(m_firstFramePlay, 1, 4);
 
     videoConfigs->addWidget(new QLabel("质量："), 2, 0);
 
@@ -198,9 +194,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     connect(m_videoCodec, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
     connect(m_proresQuality, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
     connect(m_videoWidth, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
-    connect(m_videoWidth, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
-    connect(m_videoWidth, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
-    connect(m_keepAspectRatio, &QCheckBox::stateChanged, [&](){ updateCommand(); });
+    connect(m_videoHeight, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
     connect(m_firstFramePlay, &QCheckBox::stateChanged, [&](){ updateCommand(); });
     connect(m_videoCRF, &QSpinBox::valueChanged, [&](){ updateCommand(); });
     connect(m_encodingSpeed, &QComboBox::currentTextChanged, [&](){ updateCommand(); });
@@ -231,7 +225,6 @@ void MainWindow::updateCommand()
     // string value "auto" will automatically become 0
     m_cmdGenerator->videoWidth = m_videoWidth->currentText().toInt();
     m_cmdGenerator->videoHeight = m_videoHeight->currentText().toInt();
-    m_cmdGenerator->keepAspectRatio = m_keepAspectRatio->isChecked();
     m_cmdGenerator->firstFramePlay = m_firstFramePlay->isChecked();
     m_cmdGenerator->videoQuality = m_videoCRF->text().toInt();
     m_cmdGenerator->videoEncodingSpeed = m_encodingSpeed->currentText();

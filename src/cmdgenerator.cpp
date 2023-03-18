@@ -29,7 +29,7 @@ void CmdGenerator::PrepareCommand()
             AddCommandLinePart("-vcodec");
             AddCommandLinePart(videoCodec);
         }
-        if ((videoCodec == "h264") || (videoCodec == "libx265"))
+        else if ((videoCodec == "h264") || (videoCodec == "libx265"))
         {
             AddCommandLinePart("-crf");
             AddCommandLinePart(QString("%1").arg(videoQuality));
@@ -60,12 +60,23 @@ void CmdGenerator::PrepareCommand()
         {
             AddCommandLinePart("-profile:v 4444");
         }
-        else if (videoCodec == "copy")
+
+        if (videoCodec != "copy")
         {
-            if ((videoHeight != 0) && (videoHeight != 0))
+            if ((videoWidth != 0) && (videoHeight != 0))
             {
                 AddCommandLinePart("-s");
                 AddCommandLinePart(QString("%1*%2").arg(videoWidth).arg(videoHeight));
+            }
+            else if ((videoWidth != 0) && (videoHeight == 0))
+            {
+                AddCommandLinePart("-vf");
+                AddCommandLinePart(QString("scale=%1:-2").arg(videoWidth));
+            }
+            else if ((videoWidth == 0) && (videoHeight != 0))
+            {
+                AddCommandLinePart("-vf");
+                AddCommandLinePart(QString("scale=-2:%1").arg(videoHeight));
             }
         }
 

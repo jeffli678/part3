@@ -13,7 +13,6 @@ public:
     QString videoCodec;
     QString proresQuality;
     uint32_t videoWidth{}, videoHeight{};
-    bool keepAspectRatio{};
     bool firstFramePlay{};
     uint32_t videoQuality{};
     QString videoEncodingSpeed;
