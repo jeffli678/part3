@@ -322,7 +322,7 @@ void MainWindow::onFailed(int exitCode)
 
 void MainWindow::onSucceeded(const QTime &time)
 {
-    QMessageBox(QMessageBox::Information, "Part3", QString("转换成功！用时%1s").arg(time.toString("hh:mm:ss")),
+    QMessageBox(QMessageBox::Information, "Part3", QString("转换成功！用时%1").arg(time.toString("hh:mm:ss")),
                         QMessageBox::Ok).exec();
     resetProgressUI();
 }

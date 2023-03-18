@@ -17,7 +17,7 @@ void CommandLineExecutor::Start()
         {
             QTime endTime = QTime::currentTime();
             int seconds = startTime.secsTo(endTime);
-            emit Succeeded(QTime().addSecs(seconds));
+            emit Succeeded(QTime(0, 0).addSecs(seconds));
         }
         else
         {
