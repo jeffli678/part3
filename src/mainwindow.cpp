@@ -331,7 +331,7 @@ void MainWindow::onSucceeded(const QTime &time)
 void MainWindow::onProgress(double percentage, const QTime &time)
 {
     m_progressBar->setValue(percentage);
-    QString text = QString("%1\% 剩余时间： %2").arg(percentage, 0, 'g', 1).arg(time.toString("hh:mm:ss"));
+    QString text = QString("%1\% 剩余时间： %2").arg(percentage, 0, 'f', 1).arg(time.toString("hh:mm:ss"));
     m_timeRemaining->setText(text);
 }
 
