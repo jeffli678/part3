@@ -15,6 +15,10 @@
 #include "cmdgenerator.h"
 #include "cmdexecutor.h"
 
+
+const QString part3Version = "1.0";
+
+
 class MainWindow : public QMainWindow
 {
 Q_OBJECT

@@ -10,7 +10,7 @@ using namespace std;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 {
-    setWindowTitle("Part3");
+    setWindowTitle(QString("Part3 v%1").arg(part3Version));
     resize(600, 700);
     setAcceptDrops(true);
 
