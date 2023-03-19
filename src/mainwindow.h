@@ -29,7 +29,7 @@ private slots:
     void selectFile();
     void updateCommand();
     void runCommand();
-    void onFailed(int exitCode);
+    void onFailed(int exitCode, const QString& error);
     void onSucceeded(const QTime& time);
     void onProgress(double percentage, const QTime& time);
 

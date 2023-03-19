@@ -381,10 +381,15 @@ void MainWindow::resetProgressUI()
 }
 
 
-void MainWindow::onFailed(int exitCode)
+void MainWindow::onFailed(int exitCode, const QString& error)
 {
-    QMessageBox(QMessageBox::Critical, "转换失败", QString("错误代码: %1").arg(exitCode),
-                            QMessageBox::Ok).exec();
+    auto ret = QMessageBox(QMessageBox::Critical, "转换失败",
+                           QString("错误代码: %1\n\n点击\"OK\"查看详细错误消息").arg(exitCode),
+                            QMessageBox::Ok | QMessageBox::Cancel).exec();
+
+    if (ret == QMessageBox::Ok)
+        QMessageBox(QMessageBox::Critical, "错误信息", error, QMessageBox::Ok).exec();
+
     resetProgressUI();
 }
 

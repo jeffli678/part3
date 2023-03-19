@@ -21,7 +21,7 @@ void CommandLineExecutor::Start()
         }
         else
         {
-            emit Failed(exitCode);
+            emit Failed(exitCode, m_allStdError);
         }
     });
     connect(m_process, &QProcess::readyReadStandardOutput, this, &CommandLineExecutor::updateProgress);
@@ -33,6 +33,7 @@ void CommandLineExecutor::Start()
 void CommandLineExecutor::updateProgress()
 {
     auto data = QString(m_process->readAllStandardError());
+    m_allStdError += data;
     for (auto line: data.split('\n'))
         ProcessOneLine(line);
 }
@@ -40,9 +41,6 @@ void CommandLineExecutor::updateProgress()
 
 void CommandLineExecutor::ProcessOneLine(const QString &line)
 {
-//    printf("%s\n", line.toStdString().c_str());
-//    printf("============\n");
-
     QString data = line.trimmed();
     if (data.startsWith("Duration: "))
     {
