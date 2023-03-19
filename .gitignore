@@ -54,4 +54,3 @@ compile_commands.json
 .idea/*
 
 ffmpeg/Darwin/ffmpeg
-ffmpeg/Darwin/ffprobe
