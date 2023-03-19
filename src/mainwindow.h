@@ -24,6 +24,8 @@ public:
     ~MainWindow() override = default;
 
     void updateEnabledWidgets();
+    void checkFormatCompatible();
+    void setContainerFormat(const QString& format);
 
 private slots:
     void selectFile();

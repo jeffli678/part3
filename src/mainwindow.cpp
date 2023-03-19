@@ -289,6 +289,40 @@ void MainWindow::updateEnabledWidgets()
 }
 
 
+void MainWindow::setContainerFormat(const QString &format)
+{
+    m_containerFormat->setCurrentText(format);
+}
+
+
+void MainWindow::checkFormatCompatible()
+{
+    // pcm only works with mov or wav
+    if (m_cmdGenerator->audioEnabled && (m_cmdGenerator->audioCodec == "pcm_s16le"))
+    {
+        if (m_cmdGenerator->videoEnabled && (m_cmdGenerator->containerFormat != "MOV"))
+            setContainerFormat("MOV");
+        else if (!m_cmdGenerator->videoEnabled && (m_cmdGenerator->containerFormat != "WAV"))
+            setContainerFormat("WAV");
+    }
+
+    // flac only works with mov or flac
+    if (m_cmdGenerator->audioEnabled && (m_cmdGenerator->audioCodec == "flac"))
+    {
+        if (m_cmdGenerator->videoEnabled && (m_cmdGenerator->containerFormat != "MOV"))
+            setContainerFormat("MOV");
+        else if (!m_cmdGenerator->videoEnabled && (m_cmdGenerator->containerFormat != "FLAC"))
+            setContainerFormat("FLAC");
+    }
+
+    // prores only works with mov
+    if (m_cmdGenerator->videoEnabled && m_cmdGenerator->videoCodec.startsWith("prores"))
+    {
+        setContainerFormat("MOV");
+    }
+}
+
+
 void MainWindow::updateCommand()
 {
     m_cmdGenerator->sourcePath = m_fileEdit->text();
@@ -312,6 +346,7 @@ void MainWindow::updateCommand()
     m_cmdGenerator->containerFormat = m_containerFormat->currentText();
     m_cmdGenerator->overwriteExisting = m_overwriteExisting->isChecked();
 
+    checkFormatCompatible();
     updateEnabledWidgets();
 
     m_commandLine->setText(m_cmdGenerator->GetCommand());
