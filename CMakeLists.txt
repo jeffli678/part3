@@ -45,11 +45,22 @@ if (APPLE)
             )
     endif()
 
+    get_target_property(_qmake_executable Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+    find_program(DEPLOYQT_EXECUTABLE NAMES macdeployqt HINTS "${_qt_bin_dir}")
+
     add_custom_command(TARGET part3 POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${PROJECT_SOURCE_DIR}/ffmpeg/${CMAKE_SYSTEM_NAME}
                 ${PROJECT_BINARY_DIR}/part3.app/Contents/MacOS/ffmpeg
-            COMMAND chmod +x ${PROJECT_BINARY_DIR}/part3.app/Contents/MacOS/ffmpeg/*)
+            COMMAND chmod +x ${PROJECT_BINARY_DIR}/part3.app/Contents/MacOS/ffmpeg/*
+            )
+
+    add_custom_target(package
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+            COMMAND ${DEPLOYQT_EXECUTABLE} ${PROJECT_BINARY_DIR}/part3.app
+            COMMAND ${CMAKE_COMMAND} -E tar "cf" "part3.zip" --format=zip "${PROJECT_BINARY_DIR}/part3.app")
+
 else()
     add_custom_command(TARGET part3 POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
