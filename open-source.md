@@ -1,1 +1,3 @@
-[ffmpeg](https://ffmpeg.org/) - [LGPL 2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
+- [ffmpeg](https://ffmpeg.org/) - [LGPL 2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
+- [Qt](https://www.qt.io/) - [LGPLv3](https://www.gnu.org/licenses/lgpl-3.0.en.html)
+- [start icon](https://www.iconfinder.com/icons/285661/star_icon) - [Creative Commons (Attribution 3.0 Unported)](https://creativecommons.org/licenses/by/3.0/)
