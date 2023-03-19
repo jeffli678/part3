@@ -91,8 +91,13 @@ void CommandLineExecutor::ProcessOneLine(const QString &line)
 
         if (timeValid && speedValid && (speed != 0))
         {
-            auto rate = secondsElapsed / m_totalSeconds * 100;
-            int secondsRemain = (m_totalSeconds - secondsElapsed) / speed;
+            double rate = 100;
+            int secondsRemain = 0;
+            if (m_totalSeconds != 0.0)
+            {
+                rate = secondsElapsed / m_totalSeconds * 100;
+                secondsRemain = (m_totalSeconds - secondsElapsed) / speed;
+            }
             QTime time = QTime(0, 0, 0).addSecs(secondsRemain);
             emit Progress(rate, time);
         }
