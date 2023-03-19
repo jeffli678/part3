@@ -40,11 +40,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_videoEnabled->setChecked(true);
     videoLayout->addWidget(m_videoEnabled);
 
-    m_videoInfo = new QLabel("信息：");
-    videoLayout->addWidget(m_videoInfo);
-
     videoLayout->setAlignment(Qt::AlignLeft);
-
     mainLayout->addLayout(videoLayout);
 
     auto videoConfigs = new QGridLayout(this);
@@ -222,6 +218,31 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 }
 
 
+void MainWindow::updateEnabledWidgets()
+{
+    if (m_cmdGenerator->videoEnabled)
+    {
+        if ((m_cmdGenerator->videoCodec != "h264") && (m_cmdGenerator->videoCodec != "libx265"))
+        {
+            m_videoCRF->setEnabled(false);
+            m_encodingSpeed->setEnabled(false);
+            m_maxVideoBitRate->setEnabled(false);
+        }
+        else
+        {
+            m_videoCRF->setEnabled(true);
+            m_encodingSpeed->setEnabled(true);
+            m_maxVideoBitRate->setEnabled(true);
+        }
+    }
+    else
+    {
+
+    }
+
+}
+
+
 void MainWindow::updateCommand()
 {
     m_cmdGenerator->sourcePath = m_fileEdit->text();
@@ -244,6 +265,8 @@ void MainWindow::updateCommand()
 
     m_cmdGenerator->containerFormat = m_containerFormat->currentText();
     m_cmdGenerator->overwriteExisting = m_overwriteExisting->isChecked();
+
+    updateEnabledWidgets();
 
     m_commandLine->setText(m_cmdGenerator->GetCommand());
 }

@@ -23,6 +23,8 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override = default;
 
+    void updateEnabledWidgets();
+
 private slots:
     void selectFile();
     void updateCommand();
@@ -35,7 +37,6 @@ private:
     QLineEdit* m_fileEdit;
     QPushButton* m_fileSelect;
     QCheckBox* m_videoEnabled;
-    QLabel* m_videoInfo;
     QComboBox* m_videoCodec;
     QComboBox* m_proresQuality;
     QComboBox* m_videoWidth;
