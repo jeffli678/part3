@@ -38,6 +38,7 @@ private:
     QPushButton* m_fileSelect;
     QCheckBox* m_videoEnabled;
     QComboBox* m_videoCodec;
+    QLabel* m_proresLabel;
     QComboBox* m_proresQuality;
     QComboBox* m_videoWidth;
     QComboBox* m_videoHeight;
@@ -48,7 +49,6 @@ private:
     QLineEdit* m_videoExtraParameters;
 
     QCheckBox* m_audioEnabled;
-    QLabel* m_audioInfo;
     QComboBox* m_audioCodec;
     QLineEdit* m_audioBitRate;
     QLineEdit* m_audioExtraParameters;

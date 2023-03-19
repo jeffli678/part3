@@ -53,7 +53,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_videoCodec->setEditable(true);
     videoConfigs->addWidget(m_videoCodec, 0, 1);
 
-    videoConfigs->addWidget(new QLabel("Prores 质量："), 0, 2);
+    m_proresLabel = new QLabel("Prores 质量：");
+    videoConfigs->addWidget(m_proresLabel, 0, 2);
     m_proresQuality = new QComboBox;
     QStringList videoQualities = {"0: Proxy", "1: LT", "2: Normal", "3: HQ"};
     m_proresQuality->addItems(videoQualities);
@@ -119,9 +120,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     m_audioEnabled = new QCheckBox("启用");
     m_audioEnabled->setChecked(true);
     audioLayout->addWidget(m_audioEnabled);
-
-    m_audioInfo = new QLabel("信息：");
-    audioLayout->addWidget(m_audioInfo);
 
     mainLayout->addLayout(audioLayout);
 
@@ -222,24 +220,73 @@ void MainWindow::updateEnabledWidgets()
 {
     if (m_cmdGenerator->videoEnabled)
     {
+        // first enable all video related widgets, and disable some of them according to the formats
+        m_videoCodec->setEnabled(true);
+        m_proresLabel->setVisible(true);
+        m_proresQuality->setVisible(true);
+        m_proresQuality->setEnabled(true);
+        m_videoWidth->setEnabled(true);
+        m_videoHeight->setEnabled(true);
+        m_videoCRF->setEnabled(true);
+        m_encodingSpeed->setEnabled(true);
+        m_maxVideoBitRate->setEnabled(true);
+        m_firstFramePlay->setEnabled(true);
+        m_videoExtraParameters->setEnabled(true);
+
         if ((m_cmdGenerator->videoCodec != "h264") && (m_cmdGenerator->videoCodec != "libx265"))
         {
             m_videoCRF->setEnabled(false);
             m_encodingSpeed->setEnabled(false);
             m_maxVideoBitRate->setEnabled(false);
         }
-        else
+
+        if ((m_cmdGenerator->videoCodec != "prores") && (m_cmdGenerator->videoCodec != "prores_ks"))
         {
-            m_videoCRF->setEnabled(true);
-            m_encodingSpeed->setEnabled(true);
-            m_maxVideoBitRate->setEnabled(true);
+            m_proresLabel->setVisible(false);
+            m_proresQuality->setVisible(false);
+            m_proresQuality->setEnabled(false);
+        }
+
+        if (m_cmdGenerator->videoCodec == "copy")
+        {
+            m_videoWidth->setEnabled(false);
+            m_videoHeight->setEnabled(false);
         }
     }
     else
     {
-
+        m_videoCodec->setEnabled(false);
+        m_proresLabel->setVisible(false);
+        m_proresQuality->setVisible(false);
+        m_proresQuality->setEnabled(false);
+        m_videoWidth->setEnabled(false);
+        m_videoHeight->setEnabled(false);
+        m_videoCRF->setEnabled(false);
+        m_encodingSpeed->setEnabled(false);
+        m_maxVideoBitRate->setEnabled(false);
+        m_firstFramePlay->setEnabled(false);
+        m_videoExtraParameters->setEnabled(false);
     }
 
+    if (m_cmdGenerator->audioEnabled)
+    {
+        // first enable all audio related widgets, and disable some of them according to the formats
+        m_audioCodec->setEnabled(true);
+        m_audioBitRate->setEnabled(true);
+        m_audioExtraParameters->setEnabled(true);
+
+        if ((m_cmdGenerator->audioCodec == "copy") || (m_cmdGenerator->audioCodec == "pcm_s16le") ||
+            (m_cmdGenerator->audioCodec == "flac"))
+        {
+            m_audioBitRate->setEnabled(false);
+        }
+    }
+    else
+    {
+        m_audioCodec->setEnabled(false);
+        m_audioBitRate->setEnabled(false);
+        m_audioExtraParameters->setEnabled(false);
+    }
 }
 
 
