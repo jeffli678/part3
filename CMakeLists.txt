@@ -20,7 +20,15 @@ file (GLOB SOURCES
         src/*.h)
 
 if (APPLE)
-    add_executable(part3 MACOSX_BUNDLE ${SOURCES})
+#    https://stackoverflow.com/a/24313061
+    # NOTE: Don't include the path in MACOSX_BUNDLE_ICON_FILE -- this is the property added to Info.plist
+    set(MACOSX_BUNDLE_ICON_FILE icon.icns)
+
+    # And this part tells CMake where to find and install the file itself
+    set(part3_ICON ${CMAKE_CURRENT_SOURCE_DIR}/imgs/icon.icns)
+    set_source_files_properties(${part3_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+
+    add_executable(part3 MACOSX_BUNDLE ${part3_ICON} ${SOURCES})
     set_target_properties(part3 PROPERTIES
         BUILD_WITH_INSTALL_RPATH TRUE
         INSTALL_RPATH "@loader_path/../Frameworks")
