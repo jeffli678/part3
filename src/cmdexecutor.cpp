@@ -8,6 +8,16 @@ CommandLineExecutor::CommandLineExecutor(const QString& commandLine):
 }
 
 
+CommandLineExecutor::~CommandLineExecutor()
+{
+    if (m_process)
+    {
+        m_process->kill();
+        delete m_process;
+        m_process = nullptr;
+    }
+}
+
 void CommandLineExecutor::Start()
 {
     m_process = new QProcess(this);
@@ -93,4 +103,6 @@ void CommandLineExecutor::ProcessOneLine(const QString &line)
 void CommandLineExecutor::Kill()
 {
     m_process->kill();
+    delete m_process;
+    m_process = nullptr;
 }

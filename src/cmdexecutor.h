@@ -19,6 +19,7 @@ private:
 
 public:
     explicit CommandLineExecutor(const QString& commandLine);
+    ~CommandLineExecutor();
     void Start();
     void Kill();
 
