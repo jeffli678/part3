@@ -15,8 +15,10 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     setAcceptDrops(true);
 
     auto widget = new QWidget(this);
+    setCentralWidget(widget);
 
-    auto mainLayout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout;
+    widget->setLayout(mainLayout);
     mainLayout->setAlignment(Qt::AlignTop);
 
     auto fileListLabel = new QLabel("文件：");
@@ -43,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     videoLayout->setAlignment(Qt::AlignLeft);
     mainLayout->addLayout(videoLayout);
 
-    auto videoConfigs = new QGridLayout(this);
+    auto videoConfigs = new QGridLayout;
 
     videoConfigs->addWidget(new QLabel("输出编码："), 0, 0);
 
@@ -183,9 +185,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 
     m_goButton = new QPushButton("Go!");
     mainLayout->addWidget(m_goButton);
-
-    widget->setLayout(mainLayout);
-    setCentralWidget(widget);
 
     connect(m_fileEdit, &QLineEdit::textChanged, [&](){ updateCommand(); });
     connect(m_fileSelect, &QPushButton::clicked, this, &MainWindow::selectFile);
