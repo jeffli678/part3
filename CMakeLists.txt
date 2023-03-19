@@ -21,6 +21,9 @@ file (GLOB SOURCES
 
 if (APPLE)
     add_executable(part3 MACOSX_BUNDLE ${SOURCES})
+    set_target_properties(part3 PROPERTIES
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH "@loader_path/../Frameworks")
 else()
     add_executable(part3 ${SOURCES})
 endif()
